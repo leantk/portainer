@@ -62,6 +62,11 @@
                   <i class="fa fa-users" aria-hidden="true"></i> Manage access
                 </a>
               </td>
+              <td>
+                <a ui-sref="portainer.registries.registry.images({id: item.Id})">
+                  <i class="fa fa-search" aria-hidden="true"></i> Browse
+                </a>
+              </td>
             </tr>
             <tr ng-if="!$ctrl.dataset">
               <td colspan="3" class="text-center text-muted">Loading...</td>

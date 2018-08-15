@@ -1,0 +1,82 @@
+angular.module('portainer.docker')
+.controller('RegistryImagesDatatableController', ['PaginationService', 'DatatableService',
+function (PaginationService, DatatableService) {
+
+  var ctrl = this;
+
+  this.state = {
+    selectAll: false,
+    orderBy: this.orderBy,
+    paginatedItemLimit: PaginationService.getPaginationLimit(this.tableKey),
+    displayTextFilter: false,
+    selectedItemCount: 0,
+    selectedItems: []
+  };
+
+  this.filters = {
+    usage: {
+      open: false
+    }
+  };
+
+  this.changeOrderBy = function(orderField) {
+    this.state.reverseOrder = this.state.orderBy === orderField ? !this.state.reverseOrder : false;
+    this.state.orderBy = orderField;
+    DatatableService.setDataTableOrder(this.tableKey, orderField, this.state.reverseOrder);
+  };
+
+  this.selectItem = function(item) {
+    if (item.Checked) {
+      this.state.selectedItemCount++;
+      this.state.selectedItems.push(item);
+    } else {
+      this.state.selectedItems.splice(this.state.selectedItems.indexOf(item), 1);
+      this.state.selectedItemCount--;
+    }
+  };
+
+  this.selectAll = function() {
+    for (var i = 0; i < this.state.filteredDataSet.length; i++) {
+      var item = this.state.filteredDataSet[i];
+      if (item.Checked !== this.state.selectAll) {
+        item.Checked = this.state.selectAll;
+        this.selectItem(item);
+      }
+    }
+  };
+
+  this.changePaginationLimit = function() {
+    PaginationService.setPaginationLimit(this.tableKey, this.state.paginatedItemLimit);
+  };
+
+  this.applyFilters = function(value, index, array) {
+    var image = value;
+    var filters = ctrl.filters;
+    if ((image.ContainerCount === 0 && filters.usage.showUnusedImages)
+      || (image.ContainerCount !== 0 && filters.usage.showUsedImages)) {
+      return true;
+    }
+    return false;
+  };
+
+  this.$onInit = function() {
+    setDefaults(this);
+
+    var storedOrder = DatatableService.getDataTableOrder(this.tableKey);
+    if (storedOrder !== null) {
+      this.state.reverseOrder = storedOrder.reverse;
+      this.state.orderBy = storedOrder.orderBy;
+    }
+
+    var storedFilters = DatatableService.getDataTableFilters(this.tableKey);
+    if (storedFilters !== null) {
+      this.filters = storedFilters;
+    }
+    this.filters.usage.open = false;
+  };
+
+  function setDefaults(ctrl) {
+    ctrl.showTextFilter = ctrl.showTextFilter ? ctrl.showTextFilter : false;
+    ctrl.state.reverseOrder = ctrl.reverseOrder ? ctrl.reverseOrder : false;
+  }
+}]);
