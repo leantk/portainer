@@ -20,6 +20,9 @@ angular.module('portainer.app')
         params: {
           name: '@name',
           tag: '@tag'
+        },
+        headers: {
+          'Cache-Control': 'no-cache'
         }
       },
       manifestV2: {
@@ -30,7 +33,8 @@ angular.module('portainer.app')
           tag: '@tag'
         },
         headers: {
-          Accept: 'application/vnd.docker.distribution.manifest.v2+json'
+          'Accept': 'application/vnd.docker.distribution.manifest.v2+json',
+          'Cache-Control': 'no-cache'
         }
       }
     });

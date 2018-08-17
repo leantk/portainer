@@ -1,35 +1,25 @@
 angular.module('portainer.app')
-  .controller('RegistryImagesController', ['$q', '$scope', '$state', 'LocalRegistryService', 'ModalService', 'Notifications',
-    function ($q, $scope, $state, LocalRegistryService, ModalService, Notifications) {
+  .controller('RegistryImagesController', ['$q', '$transition$', '$scope', '$state', 'RegistryService', 'LocalRegistryService', 'ModalService', 'Notifications',
+    function ($q, $transition$, $scope, $state, RegistryService, LocalRegistryService, ModalService, Notifications) {
 
       $scope.state = {
         actionInProgress: false
       };
-
       $scope.images = [];
-
-      // $scope.removeAction = function (selectedItems) {
-      //   ModalService.confirmDeletion(
-      //     'Do you want to remove the selected images?',
-      //     function onConfirm(confirmed) {
-      //       if (!confirmed) {
-      //         return;
-      //       }
-      //     }
-      //   );
-      // };      
+      $scope.registry = {};
 
       function initView() {
-        LocalRegistryService.repositories()
-          .then(function success(data) {
-            $scope.images = data;
-          })
-          .catch(function error(err) {
-            $scope.images = [];
-            Notifications.error('Failure', err, 'Unable to retrieve repositories');
-          });
+        var registryID = $transition$.params().id;
+        $q.all({
+          registry: RegistryService.registry(registryID),
+          images: LocalRegistryService.images()
+        }).then(function success(data) {
+          $scope.registry = data.registry;
+          $scope.images = data.images;
+        }).catch(function error(err) {
+          Notifications.error('Failure', err, 'Unable to retrieve registry details');
+        });
       }
-
       initView();
     }
   ]);

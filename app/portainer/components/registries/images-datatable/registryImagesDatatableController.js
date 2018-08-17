@@ -13,15 +13,6 @@ angular.module('portainer.docker')
         selectedItems: []
       };
 
-      this.filters = {
-        usage: {
-          open: false,
-          enabled: false,
-          showUsedImages: true,
-          showUnusedImages: true
-        }
-      };
-
       this.changeOrderBy = function (orderField) {
         this.state.reverseOrder = this.state.orderBy === orderField ? !this.state.reverseOrder : false;
         this.state.orderBy = orderField;
@@ -52,26 +43,6 @@ angular.module('portainer.docker')
         PaginationService.setPaginationLimit(this.tableKey, this.state.paginatedItemLimit);
       };
 
-      this.applyFilters = function (value, index, array) {
-        var image = value;
-        var filters = ctrl.filters;
-        if ((image.ContainerCount === 0 && filters.usage.showUnusedImages) ||
-          (image.ContainerCount !== 0 && filters.usage.showUsedImages)) {
-          return true;
-        }
-        return false;
-      };
-
-      this.onUsageFilterChange = function () {
-        var filters = this.filters.usage;
-        var filtered = false;
-        if (!filters.showUsedImages || !filters.showUnusedImages) {
-          filtered = true;
-        }
-        this.filters.usage.enabled = filtered;
-        DatatableService.setDataTableFilters(this.tableKey, this.filters);
-      };
-
       this.$onInit = function () {
         setDefaults(this);
 
@@ -80,12 +51,6 @@ angular.module('portainer.docker')
           this.state.reverseOrder = storedOrder.reverse;
           this.state.orderBy = storedOrder.orderBy;
         }
-
-        var storedFilters = DatatableService.getDataTableFilters(this.tableKey);
-        if (storedFilters !== null) {
-          this.filters = storedFilters;
-        }
-        this.filters.usage.open = false;
       };
 
       function setDefaults(ctrl) {

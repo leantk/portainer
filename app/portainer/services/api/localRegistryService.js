@@ -52,7 +52,6 @@ angular.module('portainer.app')
 
       $q.all(promises)
         .then(function success(data) {
-          console.log('data', data);
           var basicInfo = _.find(data, function (item) {
             return item.schemaVersion === 1;
           });
@@ -70,7 +69,9 @@ angular.module('portainer.app')
       return deferred.promise;
     }
 
-    service.repositories = function () {
+
+
+    service.images = function () {
       var deferred = $q.defer();
 
       LocalRegistries.catalog().$promise
@@ -107,6 +108,25 @@ angular.module('portainer.app')
         }).catch(function error(err) {
           deferred.reject({
             msg: 'Unable to retrieve repositories',
+            err: err
+          });
+        });
+      return deferred.promise;
+    };
+
+    service.repositoryImage = function (repository, imageId) {
+      var deferred = $q.defer();
+      LocalRegistries.manifestV2({
+          name: repository,
+          tag: 'sha256:9db2ca6ccae029dd195e331f4bede3d2ea2e67e0de29d6a0f8c1572e70f32fa7'
+        }).$promise
+        .then(function success(data) {
+          console.log(data);
+          
+          deferred.resolve();
+        }).catch(function error(err) {
+          deferred.reject({
+            msg: 'Unable to retrieve image information',
             err: err
           });
         });

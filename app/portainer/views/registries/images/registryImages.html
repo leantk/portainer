@@ -5,7 +5,7 @@
     </a>
   </rd-header-title>
   <rd-header-content>
-      <a ui-sref="portainer.registries">Registries</a> &gt; <a ui-sref="portainer.registries.registry({id: registry.Id})">{{ registry.Id }} &gt; Images</a>
+      <a ui-sref="portainer.registries">Registries</a> &gt; <a ui-sref="portainer.registries.registry({id: registry.Id})">{{ registry.Name }}</a> &gt; Images
     </rd-header-content>
 </rd-header>
 
@@ -13,8 +13,8 @@
   <div class="col-sm-12">
     <registry-images-datatable
     title-text="Images" title-icon="fa-clone"
-    dataset="images" table-key="images"
-    order-by="Id" 
+    dataset="images" table-key="registryImages"
+    order-by="name" 
     remove-action="removeAction"
     ></registry-images-datatable>
   </div>
