@@ -21,4 +21,6 @@ function RepositoryImageViewModel(data) {
   this.size = details.layers.reduce(function (a, b) {
     return {size: a.size + b.size};
   }).size;
+
+  this.digest = details.config.digest;
 }

@@ -36,6 +36,23 @@ angular.module('portainer.app')
           'Accept': 'application/vnd.docker.distribution.manifest.v2+json',
           'Cache-Control': 'no-cache'
         }
+        // ,
+        // transformResponse: function (data, headers) {
+        //   return data;
+        //   var response = {};
+        //   response.data = angular.fromJson(data);
+        //   response.headers = headers();
+        //   console.log(headers());
+        //   return response;
+        // }
+      },
+      removeImage: {
+        method: 'DELETE',
+        url: baseUrl + '/:name/manifests/:digest',
+        params: {
+          name: '@name',
+          digest: '@digest'
+        }
       }
     });
   }]);

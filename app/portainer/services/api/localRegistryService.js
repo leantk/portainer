@@ -69,8 +69,6 @@ angular.module('portainer.app')
       return deferred.promise;
     }
 
-
-
     service.images = function () {
       var deferred = $q.defer();
 
@@ -99,7 +97,7 @@ angular.module('portainer.app')
           return $q.all(manifestsPromises);
         })
         .then(function success(data) {
-          console.log(data);
+          console.log('data', data);
           var manifests = data.map(function (item) {
             return new RepositoryImageViewModel(item);
           });
@@ -116,14 +114,28 @@ angular.module('portainer.app')
 
     service.repositoryImage = function (repository, imageId) {
       var deferred = $q.defer();
-      LocalRegistries.manifestV2({
-          name: repository,
-          tag: 'sha256:9db2ca6ccae029dd195e331f4bede3d2ea2e67e0de29d6a0f8c1572e70f32fa7'
+      LocalRegistries.tags({
+          name: repository
         }).$promise
         .then(function success(data) {
+          var manifestsPromises = [];
+          for (var j = 0; j < data.tags.length; j++) {
+            var tag = data.tags[j];
+            var promise = manifestPromise(data, tag);
+            manifestsPromises.push(promise);
+          }
+          return $q.all(manifestsPromises);
+        })
+        .then(function success(data) {
           console.log(data);
-          
-          deferred.resolve();
+          var manifests = data.map(function (item) {
+            return new RepositoryImageViewModel(item);
+          });
+          var images = groupTags(manifests);
+          var image = _.find(images, function (item) {
+            return item.id === imageId;
+          });
+          deferred.resolve(image);
         }).catch(function error(err) {
           deferred.reject({
             msg: 'Unable to retrieve image information',
@@ -131,6 +143,13 @@ angular.module('portainer.app')
           });
         });
       return deferred.promise;
+    };
+
+    service.removeImage = function (repository, digest) {
+      return LocalRegistries.removeImage({
+        name: repository,
+        digest: digest
+      }).$promise;
     };
 
     return service;
